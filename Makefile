@@ -1,15 +1,19 @@
+MPI_HOME        = /users/faculty/snell/mpich
+MPI_INCL        = $(MPI_HOME)/include
+MPI_LIB         = $(MPI_HOME)/lib
 
-# hot:
-	# gcc hotplate.c -O3 -fopenmp -o hotplate
+SRC   			= lab3.c
+TARGET     		= lab3
 
-lab2:
-	gcc hotplate_pthreads.c -pthreads -O3 -o hotplate
+CC         		= $(MPI_HOME)/bin/mpicc
+CFLAGS			= -O -I$(MPI_INCL)
+LFLAGS     		= -L$(MPI_LIB) -lm -lmpich
 
-lab2Linux:
-	gcc hotplate_pthreads.c -lpthread -O3 -o hotplate
+$(TARGET): $(SRC)
+	$(CC) $(CFLAGS) $(SRC) -o $(TARGET)
 
-all:
-	lab2Linux
+run: $(TARGET)
+	./$(TARGET) -p4pg $(TARGET).cfg
 
 clean:
-	rm hotplate
+		/bin/rm -f  *.o
