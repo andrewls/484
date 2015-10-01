@@ -9,9 +9,34 @@
 #define ROWS_PER_THREAD GRID_SIZE/NUM_THREADS
 #define THREAD_LAST_ROW(i) i + ROWS_PER_THREAD
 
+
+typedef struct linear_barrier_t {
+	int num_threads_to_wait_for;
+	int num_threads_passed_through;
+	pthread_mutex_t * mutex;
+} linear_barrier_t;
+
+void linear_barrier_init(linear_barrier_t * barrier) {
+	pthread_mutex_t mutex;
+	pthread_mutex_init(&mutex, NULL);
+	barrier->num_threads_to_wait_for = NUM_THREADS;
+	barrier->num_threads_passed_through = 0;
+	barrier->mutex = &mutex;
+}
+
+void linear_barrier_wait(linear_barrier_t * barrier) {
+	pthread_mutex_lock(barrier->mutex);
+	barrier->num_threads_passed_through++;
+	pthread_mutex_unlock(barrier->mutex);
+	while(barrier->num_threads_passed_through != barrier->num_threads_to_wait_for);
+	pthread_mutex_lock(barrier->mutex);
+	barrier->num_threads_passed_through--;
+	pthread_mutex_unlock(barrier->mutex);
+}
+
 // these three are the grids used by the main function
 float *temp, *grid, *oldGrid;
-pthread_barrier_t barrier;
+linear_barrier_t barrier;
 
 void print_grid(float* grid) {
 	int i, j;
@@ -99,7 +124,7 @@ void * hotplate(void * ptr) {
 	}
 
 	// TODO - add the constant cells
-	pthread_barrier_wait(&barrier);
+	linear_barrier_wait(&barrier);
 	set_constant_temps(grid);
 	set_constant_temps(oldGrid);
 
@@ -121,16 +146,6 @@ void * hotplate(void * ptr) {
 	} while (!steady(oldGrid));
 
 	printf("Total iterations: %d\n", iterations);
-// pthread_barrier_init (pthread_barrier_t *barrier,
-//                       const pthread_barrierattr_t *attr,
-//                       unsigned int count);
-// This creates a barrier object at the passed address (a pointer to the barrier object is in barrier), with the attributes as specified by attr. The count member holds the number of threads that must call pthread_barrier_wait().
-//
-// Once the barrier is created, each thread will call pthread_barrier_wait() to indicate that it has completed:
-//
-// #include <pthread.h>
-//
-// int pthread_barrier_wait (pthread_barrier_t *barrier);
 }
 
 int main(int argc, char** argv) {
@@ -145,7 +160,8 @@ int main(int argc, char** argv) {
 	oldGrid = (float*) malloc(GRID_SIZE * GRID_SIZE * sizeof(float));
 
 	// initialize the barrier that all of the threads will use to synchronize
-	pthread_barrier_init(&barrier, NULL, NUM_THREADS);
+	// pthread_barrier_init(&barrier, NULL, NUM_THREADS);
+	linear_barrier_init(&barrier);
 
 	// create the threads
 	pthread_t threads[NUM_THREADS];

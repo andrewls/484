@@ -5,8 +5,11 @@
 lab2:
 	gcc hotplate_pthreads.c -pthreads -O3 -o hotplate
 
+lab2Linux:
+	gcc hotplate_pthreads.c -lpthread -O3 -o hotplate
+
 all:
-	lab2
+	lab2Linux
 
 clean:
 	rm hotplate
