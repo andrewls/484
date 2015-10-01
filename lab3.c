@@ -47,8 +47,13 @@
 #define VECSIZE 8
 #define ITERATIONS 10000
 
+typedef struct nodeElement {
+  double val;
+  int rank;
+} NodeElement;
+
 // Broadcast vector to all nodes
-void broadcast(int numdim, int rank, void * vector, int vectorSize, MPI_Datatype datatype) {
+void broadcast(int numdim, int rank, NodeElement * vector, int vectorSize, MPI_Datatype datatype) {
   MPI_Status status;
   int notparticipating = pow(2,numdim-1)-1;
   int bitmask = pow(2,numdim-1);
@@ -70,14 +75,14 @@ void broadcast(int numdim, int rank, void * vector, int vectorSize, MPI_Datatype
 }
 
 // Reduce values to one node
-void maxReduce(int numdim, int rank, void * vector, int vectorSize, MPI_Datatype datatype)
+void maxReduce(int numdim, int rank, NodeElement * vector, int vectorSize, MPI_Datatype datatype)
 {
   MPI_Status status;
   int notparticipating = 0;
   int curdim = 0;
   int bitmask = 1;
   // allocate a new array to hold received values
-  void * newValues = (void*) malloc(MPI_Type_size(datatype, &vectorSize));
+  NodeElement * newValues = malloc(vectorSize * sizeof(NodeElement));
   for(curdim = 0; curdim < numdim; curdim++) {
      if ((rank & notparticipating) == 0) {
        if ((rank & bitmask) != 0) {
@@ -87,11 +92,10 @@ void maxReduce(int numdim, int rank, void * vector, int vectorSize, MPI_Datatype
        else {
          int msg_src = rank ^ bitmask;
          MPI_Recv(newValues, vectorSize, datatype, msg_src, 0, MPI_COMM_WORLD, &status);
-         data_size = MPI_Type_size(datatype, &vectorSize));
          int i;
          for (i = 0; i < vectorSize; i++) {
-           if (*(newValues + i * data_size) > *(vector + i * data_size)) {
-             *(vector + i * data_size) = *(newValues + i * data_size);
+           if ((*(newValues + i)).val > (*(vector + i)).val) {
+             *(vector + i) = *(newValues + i);
            }
          }
        }
@@ -122,10 +126,7 @@ main(int argc, char *argv[]) {
         // each process has an array of VECSIZE double: ain[VECSIZE]
         double ain[VECSIZE], aout[VECSIZE];
         int  ind[VECSIZE];
-        struct {
-            double val;
-            int   rank;
-        } in[VECSIZE], out[VECSIZE];
+        NodeElement in[VECSIZE], out[VECSIZE];
         int myrank, root = 0;
 
         MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
