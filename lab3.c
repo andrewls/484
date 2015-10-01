@@ -87,7 +87,7 @@ void maxReduce(int numdim, int rank, void * vector, int vectorSize, MPI_Datatype
        else {
          int msg_src = rank ^ bitmask;
          MPI_Recv(newValues, vectorSize, datatype, msg_src, 0, MPI_COMM_WORLD, &status);
-         data_size = MPI_Type_size(datatype, &vectorSize));
+         int data_size = MPI_Type_size(datatype, &vectorSize);
          int i;
          for (i = 0; i < vectorSize; i++) {
            if (*(newValues + i * data_size) > *(vector + i * data_size)) {
