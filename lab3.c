@@ -137,7 +137,7 @@ main(int argc, char *argv[]) {
         for(iter = 0; iter < ITERATIONS; iter++) {
           for(i = 0; i < VECSIZE; i++) {
             ain[i] = rand();
-//          printf("init proc %d [%d]=%f\n",myrank,i,ain[i]);
+          printf("init proc %d [%d]=%f\n",myrank,i,ain[i]);
           }
           for (i=0; i<VECSIZE; ++i) {
             in[i].val = ain[i];
@@ -149,7 +149,7 @@ main(int argc, char *argv[]) {
               /* read ranks out
                */
               for (i=0; i<VECSIZE; ++i) {
-//                printf("root out[%d] = %f from %d\n",i,out[i].val,out[i].rank);
+                printf("root out[%d] = %f from %d\n",i,out[i].val,out[i].rank);
                   aout[i] = out[i].val;
                   ind[i] = out[i].rank;
               }
@@ -157,7 +157,7 @@ main(int argc, char *argv[]) {
           // Now broadcast this max vector to everyone else.
           MPI_Bcast(out, VECSIZE, MPI_DOUBLE_INT, root, MPI_COMM_WORLD);
           for(i = 0; i < VECSIZE; i++) {
-//          printf("final proc %d [%d]=%f from %d\n",myrank,i,out[i].val,out[i].rank);
+          printf("final proc %d [%d]=%f from %d\n",myrank,i,out[i].val,out[i].rank);
           }
         }
         MPI_Finalize();
