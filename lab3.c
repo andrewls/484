@@ -143,7 +143,8 @@ main(int argc, char *argv[]) {
             in[i].val = ain[i];
             in[i].rank = myrank;
           }
-          MPI_Reduce( in, out, VECSIZE, MPI_DOUBLE_INT, MPI_MAXLOC, root, MPI_COMM_WORLD);
+          maxReduce(3, myrank, in, VECSIZE, MPI_DOUBLE_INT);
+          // MPI_Reduce( in, out, VECSIZE, MPI_DOUBLE_INT, MPI_MAXLOC, root, MPI_COMM_WORLD);
           // At this point, the answer resides on process root
           if (myrank == root) {
               /* read ranks out
@@ -155,7 +156,8 @@ main(int argc, char *argv[]) {
               }
           }
           // Now broadcast this max vector to everyone else.
-          MPI_Bcast(out, VECSIZE, MPI_DOUBLE_INT, root, MPI_COMM_WORLD);
+          broadcast(3, myrank, in, VECSIZE, MPI_DOUBLE_INT) {
+          // MPI_Bcast(out, VECSIZE, MPI_DOUBLE_INT, root, MPI_COMM_WORLD);
           for(i = 0; i < VECSIZE; i++) {
           printf("final proc %d [%d]=%f from %d\n",myrank,i,out[i].val,out[i].rank);
           }
