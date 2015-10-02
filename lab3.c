@@ -156,7 +156,7 @@ main(int argc, char *argv[]) {
               }
           }
           // Now broadcast this max vector to everyone else.
-          broadcast(3, myrank, in, VECSIZE, MPI_DOUBLE_INT) {
+          broadcast(3, myrank, in, VECSIZE, MPI_DOUBLE_INT);
           // MPI_Bcast(out, VECSIZE, MPI_DOUBLE_INT, root, MPI_COMM_WORLD);
           for(i = 0; i < VECSIZE; i++) {
           printf("final proc %d [%d]=%f from %d\n",myrank,i,out[i].val,out[i].rank);
