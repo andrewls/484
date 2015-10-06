@@ -177,7 +177,7 @@ main(int argc, char *argv[]) {
           if (myrank == root) {
             for (i = 0; i < VECSIZE; i++) {
               if (outCopy[i].val == out[i].val && outCopy[i].rank == out[i].rank) printf("Good\n");
-              else printf("ERROR: process %d, outcopy[%d].val = %f, out[%d].val=%f, outCopy[%d].rank = %d, out[%d].rank = %d\n", myrank, i, outCopy[i].val, i, out[i], i, outCopy[i].rank, i, out[i].rank);
+              else printf("ERROR: process %d, outcopy[%d].val = %f, out[%d].val=%f, outCopy[%d].rank = %d, out[%d].rank = %d\n", myrank, i, outCopy[i].val, i, out[i].val, i, outCopy[i].rank, i, out[i].rank);
             }
           }
           // do the vector broadcast of the reduced vector

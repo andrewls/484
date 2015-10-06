@@ -3,8 +3,49 @@
 #include <mpi.h>
 #include <math.h>
 
-//#define VECSIZE 65536
-#define VECSIZE 1
+// Synopsis
+// int MPI_Send(const void *buf, int count, MPI_Datatype datatype, int dest, int tag,
+//              MPI_Comm comm)
+
+// Input Parameters
+// buf
+//    initial address of send buffer (choice)
+// count
+//    number of elements in send buffer (nonnegative integer)
+// datatype
+//    datatype of each send buffer element (handle)
+// dest
+//    rank of destination (integer)
+// tag
+//    message tag (integer)
+// comm
+//    communicator (handle)
+
+
+// Synopsis
+//
+// int MPI_Recv(void *buf, int count, MPI_Datatype datatype, int source, int tag,
+//              MPI_Comm comm, MPI_Status *status)
+// Output Parameters
+//
+// buf
+// initial address of receive buffer (choice)
+// status
+// status object (Status)
+// Input Parameters
+//
+// count
+// maximum number of elements in receive buffer (integer)
+// datatype
+// datatype of each receive buffer element (handle)
+// source
+// rank of source (integer)
+// tag
+// message tag (integer)
+// comm
+// communicator (handle)
+
+#define VECSIZE 8
 //#define ITERATIONS 10000
 #define ITERATIONS 10000
 
@@ -83,7 +124,7 @@ main(int argc, char *argv[]) {
         MPI_Comm_rank(MPI_COMM_WORLD, &iproc);
 
         gethostname(host,253);
-        // printf("I am proc %d of %d running on %s\n", iproc, nproc,host);
+        printf("I am proc %d of %d running on %s\n", iproc, nproc,host);
         // each process has an array of VECSIZE double: ain[VECSIZE]
         double ain[VECSIZE], aout[VECSIZE];
         int  ind[VECSIZE];
