@@ -46,7 +46,8 @@
 // communicator (handle)
 
 #define VECSIZE 8
-#define ITERATIONS 10000
+//#define ITERATIONS 10000
+#define ITERATIONS 1
 
 typedef struct nodeElement {
   double val;
@@ -143,7 +144,9 @@ main(int argc, char *argv[]) {
             in[i].val = ain[i];
             in[i].rank = myrank;
           }
+	  printf("starting max reduce.\n");
           maxReduce(3, myrank, in, VECSIZE, MPI_DOUBLE_INT);
+	  memcpy(out, in, sizeof(NodeElement) * VECSIZE);
           // MPI_Reduce( in, out, VECSIZE, MPI_DOUBLE_INT, MPI_MAXLOC, root, MPI_COMM_WORLD);
           // At this point, the answer resides on process root
           if (myrank == root) {
@@ -156,7 +159,9 @@ main(int argc, char *argv[]) {
               }
           }
           // Now broadcast this max vector to everyone else.
-          broadcast(3, myrank, in, VECSIZE, MPI_DOUBLE_INT);
+	  printf("Starting broadcast.");
+          broadcast(3, myrank, in, VECSIZE, MPI_DOUBLE_INT); 
+	  memcpy(out, in, sizeof(NodeElement) * VECSIZE);
           // MPI_Bcast(out, VECSIZE, MPI_DOUBLE_INT, root, MPI_COMM_WORLD);
           for(i = 0; i < VECSIZE; i++) {
           printf("final proc %d [%d]=%f from %d\n",myrank,i,out[i].val,out[i].rank);
