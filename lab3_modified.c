@@ -144,9 +144,14 @@ main(int argc, char *argv[]) {
             in[i].val = ain[i];
             in[i].rank = myrank;
           }
-	  printf("starting max reduce.\n");
+
+          NodeElement inCopy[VECSIZE], outCopy[VECSIZE];
+          memcpy(inCopy, in, sizeof(NodeElement) * VECSIZE);
+          memcpy(outCopy, out, sizeof(NodeElement) * VECSIZE);
+
+          printf("starting max reduce.\n");
           maxReduce(3, myrank, in, VECSIZE, MPI_DOUBLE_INT);
-	  memcpy(out, in, sizeof(NodeElement) * VECSIZE);
+          memcpy(out, in, sizeof(NodeElement) * VECSIZE);
           // MPI_Reduce( in, out, VECSIZE, MPI_DOUBLE_INT, MPI_MAXLOC, root, MPI_COMM_WORLD);
           // At this point, the answer resides on process root
           if (myrank == root) {
@@ -159,12 +164,28 @@ main(int argc, char *argv[]) {
               }
           }
           // Now broadcast this max vector to everyone else.
-	  printf("Starting broadcast.");
+          printf("Starting broadcast.\n");
           broadcast(3, myrank, in, VECSIZE, MPI_DOUBLE_INT);
-	  memcpy(out, in, sizeof(NodeElement) * VECSIZE);
+          memcpy(out, in, sizeof(NodeElement) * VECSIZE);
           // MPI_Bcast(out, VECSIZE, MPI_DOUBLE_INT, root, MPI_COMM_WORLD);
           for(i = 0; i < VECSIZE; i++) {
-          printf("final proc %d [%d]=%f from %d\n",myrank,i,out[i].val,out[i].rank);
+            printf("final proc %d [%d]=%f from %d\n",myrank,i,out[i].val,out[i].rank);
+          }
+
+          MPI_Reduce(inCopy, outCopy, VECSIZE, MPI_DOUBLE_INT, MPI_MAXLOC, root, MPI_COMM_WORLD);
+          //check to make sure that the answer matches the copy given by the root process
+          if (myrank == root) {
+            for (i = 0; i < VECSIZE; i++) {
+              if (outCopy[i].val == out[i].val && outCopy[i].rank == out[i].rank) printf("Good\n");
+              else printf("ERROR: process %d, outcopy[%d].val = %f, out[%d].val=%f, outCopy[%d].rank = %d, out[%d].rank = %d\n", myrank, i, outCopy[i].val, i, out[i], i, outCopy[i].rank, i, out[i].rank);
+            }
+          }
+          // do the vector broadcast of the reduced vector
+          MPI_Bcast(outCopy, VECSIZE, MPI_DOUBLE_INT, root, MPI_COMM_WORLD);
+          // ccheck to make sure the received vector matches
+          for (i = 0; i < VECSIZE; i++) {
+            if (outCopy[i].val == out[i].val) printf("Good\n");
+            else printf("ERROR: process %d, outcopy[%d].val = %f, out[%d].val = %f\n", myrank, i, outCopy[i].val, i, out[i].val);
           }
         }
         MPI_Finalize();
