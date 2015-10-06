@@ -145,7 +145,7 @@ main(int argc, char *argv[]) {
             in[i].rank = myrank;
           }
 	  printf("starting max reduce.\n");
-          maxReduce(3, myrank, in, VECSIZE, MPI_DOUBLE_INT);
+          maxReduce((int)log2(nproc), myrank, in, VECSIZE, MPI_DOUBLE_INT);
 	  memcpy(out, in, sizeof(NodeElement) * VECSIZE);
           // MPI_Reduce( in, out, VECSIZE, MPI_DOUBLE_INT, MPI_MAXLOC, root, MPI_COMM_WORLD);
           // At this point, the answer resides on process root
@@ -160,7 +160,7 @@ main(int argc, char *argv[]) {
           }
           // Now broadcast this max vector to everyone else.
 	  printf("Starting broadcast.");
-          broadcast(3, myrank, in, VECSIZE, MPI_DOUBLE_INT);
+          broadcast((int) log2(nproc), myrank, in, VECSIZE, MPI_DOUBLE_INT);
 	  memcpy(out, in, sizeof(NodeElement) * VECSIZE);
           // MPI_Bcast(out, VECSIZE, MPI_DOUBLE_INT, root, MPI_COMM_WORLD);
           for(i = 0; i < VECSIZE; i++) {
