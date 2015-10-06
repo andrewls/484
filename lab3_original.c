@@ -3,8 +3,49 @@
 #include <mpi.h>
 #include <math.h>
 
-//#define VECSIZE 65536
-#define VECSIZE 1
+// Synopsis
+// int MPI_Send(const void *buf, int count, MPI_Datatype datatype, int dest, int tag,
+//              MPI_Comm comm)
+
+// Input Parameters
+// buf
+//    initial address of send buffer (choice)
+// count
+//    number of elements in send buffer (nonnegative integer)
+// datatype
+//    datatype of each send buffer element (handle)
+// dest
+//    rank of destination (integer)
+// tag
+//    message tag (integer)
+// comm
+//    communicator (handle)
+
+
+// Synopsis
+//
+// int MPI_Recv(void *buf, int count, MPI_Datatype datatype, int source, int tag,
+//              MPI_Comm comm, MPI_Status *status)
+// Output Parameters
+//
+// buf
+// initial address of receive buffer (choice)
+// status
+// status object (Status)
+// Input Parameters
+//
+// count
+// maximum number of elements in receive buffer (integer)
+// datatype
+// datatype of each receive buffer element (handle)
+// source
+// rank of source (integer)
+// tag
+// message tag (integer)
+// comm
+// communicator (handle)
+
+#define VECSIZE 8
 //#define ITERATIONS 10000
 #define ITERATIONS 10000
 
@@ -83,7 +124,7 @@ main(int argc, char *argv[]) {
         MPI_Comm_rank(MPI_COMM_WORLD, &iproc);
 
         gethostname(host,253);
-        // printf("I am proc %d of %d running on %s\n", iproc, nproc,host);
+        printf("I am proc %d of %d running on %s\n", iproc, nproc,host);
         // each process has an array of VECSIZE double: ain[VECSIZE]
         double ain[VECSIZE], aout[VECSIZE];
         int  ind[VECSIZE];
@@ -103,8 +144,8 @@ main(int argc, char *argv[]) {
             in[i].val = ain[i];
             in[i].rank = myrank;
           }
-          maxReduce((int)log2(nproc), myrank, in, VECSIZE, MPI_DOUBLE_INT);
 	  //printf("starting max reduce.\n");
+          maxReduce(3, myrank, in, VECSIZE, MPI_DOUBLE_INT);
 	  memcpy(out, in, sizeof(NodeElement) * VECSIZE);
           // MPI_Reduce( in, out, VECSIZE, MPI_DOUBLE_INT, MPI_MAXLOC, root, MPI_COMM_WORLD);
           // At this point, the answer resides on process root
@@ -119,7 +160,7 @@ main(int argc, char *argv[]) {
           }
           // Now broadcast this max vector to everyone else.
 	  //printf("Starting broadcast.");
-          broadcast((int) log2(nproc), myrank, in, VECSIZE, MPI_DOUBLE_INT);
+          broadcast(3, myrank, in, VECSIZE, MPI_DOUBLE_INT);
 	  memcpy(out, in, sizeof(NodeElement) * VECSIZE);
           // MPI_Bcast(out, VECSIZE, MPI_DOUBLE_INT, root, MPI_COMM_WORLD);
           for(i = 0; i < VECSIZE; i++) {
