@@ -1,33 +1,22 @@
 import matplotlib.pyplot as plot
 
 def main():
-    numThreads = [1,2,4,8,16,32]
-    executionTimes = [7.928031,4.068973,3.043015,2.584986,3.221051,3.594792]
-    executionTimes2 = [8.407208,6.463637,2.934534,1.970580,2.332974,3.290185]
-    executionTimes3 = [6.020465,3.192295,2.631030,2.003227,1.512740,2.720293]
+    numNodes = [1,2,4,8,16,32]
+    execution_time_vector_size_1 = [0.0018, 2.0546, 4.0151, 11.1284, 19.1411, 23.115244]
+    execution_time_vector_size_65k = [0.0021, 0.1007, 0.1979, 0.3371, 0.4710, 0.6218]
 
-    plot.plot(numThreads, executionTimes)
-    plot.ylim([1,10])
-    plot.title("Naive Implementation")
-    plot.xlabel("Number of Threads")
+    plot.plot(numNodes, execution_time_vector_size_1)
+    plot.title("Time to reduce and broadcast a vector of size 1 10,000 times")
+    plot.xlabel("Number of nodes")
     plot.ylabel("Execution Time (s)")
-    plot.savefig("graph1.png")
+    plot.savefig("vector-size-1.png")
     plot.close()
 
-    plot.plot(numThreads, executionTimes2)
-    plot.ylim([1,10])
-    plot.title("Increased Parallelization")
-    plot.xlabel("Number of Threads")
-    plot.ylabel("Execution Time (s)")
-    plot.savefig("graph2.png")
-    plot.close()
-
-    plot.plot(numThreads, executionTimes3)
-    plot.ylim([1,10])
-    plot.title("Increased Parallelization with Steady State Tracking")
-    plot.xlabel("Number of Threads")
-    plot.ylabel("Execution Time (s)")
-    plot.savefig("graph3.png")
+    plot.plot(numNodes, execution_time_vector_size_65k)
+    plot.title("Time to reduce and broadcast a vector of size 65k 1 time")
+    plot.xlabel("Number of nodes")
+    plot.ylabel("Execution time (s)")
+    plot.savefig("vector-size-65k.png")
     plot.close()
 
 if __name__ == '__main__':
