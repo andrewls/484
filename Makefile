@@ -2,8 +2,8 @@ MPI_HOME        = /users/faculty/snell/mpich
 MPI_INCL        = $(MPI_HOME)/include
 MPI_LIB         = $(MPI_HOME)/lib
 
-SRC   			= lab3.c
-TARGET     		= lab3
+SRC   			= lab4.c
+TARGET     		= lab4
 
 CC         		= $(MPI_HOME)/bin/mpicc
 CFLAGS			= -O -I$(MPI_INCL)
